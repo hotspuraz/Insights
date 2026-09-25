@@ -1,10 +1,14 @@
 package dev.frankheijden.insights.commands.util;
 
+import com.mojang.brigadier.LiteralMessage;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.incendo.cloud.SenderMapper;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -38,6 +42,26 @@ public class CommandSenderMapper implements SenderMapper<CommandSourceStack, Com
             @Override
             public @Nullable Entity getExecutor() {
                 return sender instanceof Entity entity ? entity : null;
+            }
+
+            @Override
+            public Player getPlayerOrThrow() throws CommandSyntaxException {
+                if (sender instanceof Player player) {
+                    return player;
+                }
+                throw new SimpleCommandExceptionType(
+                        new LiteralMessage("The command source is not a player")
+                ).create();
+            }
+
+            @Override
+            public Entity getEntityOrThrow() throws CommandSyntaxException {
+                if (sender instanceof Entity entity) {
+                    return entity;
+                }
+                throw new SimpleCommandExceptionType(
+                        new LiteralMessage("The command source is not an entity")
+                ).create();
             }
 
             @Override
